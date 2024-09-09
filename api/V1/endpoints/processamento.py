@@ -1,0 +1,16 @@
+from fastapi import APIRouter
+from api.utils.scraper import fetch_data
+from core.config import settings
+
+router = APIRouter()
+
+@router.get("/download-arquivo")
+def download_arquivos():
+    Viniferas_data = fetch_data(settings.URL_DOWNLOAD+"/ProcessaViniferas.csv", "ProcessaViniferas.csv")
+    Americanas_data = fetch_data(settings.URL_DOWNLOAD+"/ProcessaAmericanas.csv", "ProcessaAmericanas.csv")
+    Mesa_data = fetch_data(settings.URL_DOWNLOAD+"/ProcessaMesa.csv", "ProcessaMesa.csv")
+    SemClass_data = fetch_data(settings.URL_DOWNLOAD+"/ProcessaSemclass.csv", "ProcessaSemclass.csv")
+    if Viniferas_data and Americanas_data and Mesa_data and SemClass_data:     
+        return {"status": "Dados de produção extraídos com sucesso"}
+    else:
+        return {"status": "Falha ao extrair dados de produção"}
