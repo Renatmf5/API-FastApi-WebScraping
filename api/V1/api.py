@@ -5,6 +5,7 @@ from api.V1.endpoints import processamento
 from api.V1.endpoints import comercializacao
 from api.V1.endpoints import importacao
 from api.V1.endpoints import exportacao
+from api.V1.endpoints import usuarios
 
 
 api_router = APIRouter()
@@ -14,3 +15,4 @@ api_router.include_router(processamento.router, prefix="/processamento", tags=["
 api_router.include_router(comercializacao.router, prefix="/comercializacao", tags=["comercializacao"])
 api_router.include_router(importacao.router, prefix="/importacao", tags=["importacao"])
 api_router.include_router(exportacao.router, prefix="/exportacao", tags=["exportacao"])
+api_router.include_router(usuarios.router, prefix="/usuarios", tags=["usuarios"])

@@ -1,11 +1,15 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from api.utils.scraper import fetch_data
 from core.config import settings
+from core.auth import get_current_user
+from models.usuario_model import UsuarioModel
 
 router = APIRouter()
 
 @router.get("/download-arquivo")
-def download_arquivos():
+def download_arquivos(usuario_logado: UsuarioModel = Depends(get_current_user)):
+    if not usuario_logado.admin:
+        return {"status": "Usuário não autorizado"}
     Viniferas_data = fetch_data(settings.URL_DOWNLOAD+"/ProcessaViniferas.csv", "ProcessaViniferas.csv")
     Americanas_data = fetch_data(settings.URL_DOWNLOAD+"/ProcessaAmericanas.csv", "ProcessaAmericanas.csv")
     Mesa_data = fetch_data(settings.URL_DOWNLOAD+"/ProcessaMesa.csv", "ProcessaMesa.csv")
