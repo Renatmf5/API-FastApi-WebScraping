@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     URL_DOWNLOAD: str = "http://vitibrasil.cnpuv.embrapa.br/download"
     # Logging
     LOG_LEVEL: str = "info"
+    # DataLake Bucket name
+    BUCKET_NAME: str = 'datalake-bucket-techchallenge1'
     
     
 settings = Settings()

@@ -7,13 +7,13 @@ from models.usuario_model import UsuarioModel
 router = APIRouter()
 
 @router.get("/download-arquivo")
-def download_arquivo(usuario_logado: UsuarioModel = Depends(get_current_user)):
+async def download_arquivo(usuario_logado: UsuarioModel = Depends(get_current_user)):
     # Valida se usuario_logado atributo é admin true
     if not usuario_logado.admin:
         return {"status": "Usuário não autorizado"}
-    data = fetch_data(settings.URL_DOWNLOAD+"/Producao.csv", "Producao.csv")
+    data = await fetch_data(settings.URL_DOWNLOAD+"/Producao.csv", "Bronze/Producao.parquet")
     if data:
-        # extrair dados e fazer o download na pasta local do projeto        
-        return {"status": "Dados de produção extraídos com sucesso"}
+        # extrair dados e fazer o download no data lake        
+        return {"status": "Dados de produção enviados ao Data-Lake com sucesso"}
     else:
         return {"status": "Falha ao extrair dados de produção"}
