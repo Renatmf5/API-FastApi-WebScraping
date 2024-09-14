@@ -31,8 +31,9 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 def signup(usuario: UsuarioCreate, db: Session = Depends(get_session)):
     valida_db_user = get_user(db, usuario.username)
     # Validar se username ja existe cadastrado na base
-    if valida_db_user.username == usuario.username:
+    if valida_db_user:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="Usuário já cadastrado")
+    
     usuario_db = UsuarioModel(username=usuario.username, 
                                     password=get_password_hash(usuario.password), 
                                     admin=usuario.admin)

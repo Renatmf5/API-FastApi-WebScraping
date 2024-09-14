@@ -4,7 +4,7 @@ from typing import Optional
 class UsuarioBase(BaseModel):
     id: Optional[int] = None
     username: str
-    admin: bool = False
+    admin: Optional[bool] = False
     
     class Config:
         from_attributes = True

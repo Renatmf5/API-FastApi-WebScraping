@@ -7,13 +7,13 @@ from models.usuario_model import UsuarioModel
 router = APIRouter()
 
 @router.get("/download-arquivo")
-def download_arquivos(usuario_logado: UsuarioModel = Depends(get_current_user)):
+async def download_arquivos(usuario_logado: UsuarioModel = Depends(get_current_user)):
     if not usuario_logado.admin:
         return {"status": "Usuário não autorizado"}
-    Viniferas_data = fetch_data(settings.URL_DOWNLOAD+"/ProcessaViniferas.csv", "ProcessaViniferas.csv")
-    Americanas_data = fetch_data(settings.URL_DOWNLOAD+"/ProcessaAmericanas.csv", "ProcessaAmericanas.csv")
-    Mesa_data = fetch_data(settings.URL_DOWNLOAD+"/ProcessaMesa.csv", "ProcessaMesa.csv")
-    SemClass_data = fetch_data(settings.URL_DOWNLOAD+"/ProcessaSemclass.csv", "ProcessaSemclass.csv")
+    Viniferas_data = await fetch_data(settings.URL_DOWNLOAD+"/ProcessaViniferas.csv", "Bronze/ProcessaViniferas.parquet")
+    Americanas_data = await fetch_data(settings.URL_DOWNLOAD+"/ProcessaAmericanas.csv", "Bronze/ProcessaAmericanas.parquet")
+    Mesa_data = await fetch_data(settings.URL_DOWNLOAD+"/ProcessaMesa.csv", "Bronze/ProcessaMesa.parquet")
+    SemClass_data = await fetch_data(settings.URL_DOWNLOAD+"/ProcessaSemclass.csv", "Bronze/ProcessaSemclass.parquet")
     if Viniferas_data and Americanas_data and Mesa_data and SemClass_data:     
         return {"status": "Dados de produção extraídos com sucesso"}
     else:
