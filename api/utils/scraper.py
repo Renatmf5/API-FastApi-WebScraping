@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 
+#ALTERAÇÃOTESTE
+
 def fetch_data(url:str, file_name:str):
     response = requests.get(url)
     if response.status_code == 200:
