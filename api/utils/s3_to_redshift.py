@@ -6,15 +6,7 @@ import os
 from fastapi import HTTPException
 from core.config import settings
 from io import BytesIO
-
-# Função para obter parâmetros do SSM Parameter Store
-def get_ssm_parameter(name: str) -> str:
-    ssm_client = boto3.client('ssm')
-    try:
-        response = ssm_client.get_parameter(Name=name, WithDecryption=True)
-        return response['Parameter']['Value']
-    except ssm_client.exceptions.ParameterNotFound:
-        raise HTTPException(status_code=500, detail=f"Parameter {name} not found in SSM Parameter Store")
+from core.services.parameterServiceAws import get_ssm_parameter
 
 def map_dtype_to_redshift(dtype):
     if pd.api.types.is_integer_dtype(dtype):
