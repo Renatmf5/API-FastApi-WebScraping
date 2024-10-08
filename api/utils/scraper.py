@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 from fastapi import UploadFile
 from api.utils.upfile_bucketS3 import upload_file
-from api.utils.s3_to_redshift import process_s3_to_redshift
 import io
 import pandas as pd
 import re
@@ -68,7 +67,7 @@ async def fetch_data(url: str, file_name: str):
                 df_final = pd.merge(df_quantidade, df_valor, left_index=True, right_index=True)
                 
                 # Reorganizar as colunas dinamicamente
-                df_final = df_final[id_vars + ['quantidade', 'valores', 'ano']]
+                df_final = df_final[id_vars + ['quantidade', 'ano','valores']]
             else:
                 # Identificar colunas que não são anos
                 id_vars = [col for col in df.columns if not col.isdigit()]
@@ -96,7 +95,7 @@ async def fetch_data(url: str, file_name: str):
             # Upload do arquivo Parquet para o S3
             upload_response = await upload_file(upload_file_obj)
             if upload_response['status'] == 'success':
-                process_s3_to_redshift(file_name)
+                print("Arquivo enviado ao Data Lake com sucesso!")
             print(upload_response)
             
             # Faz o parse do conteúdo original usando BeautifulSoup

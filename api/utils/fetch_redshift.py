@@ -13,18 +13,21 @@ cache = TTLCache(maxsize=100, ttl=300)  # Cache com tamanho máximo de 100 itens
 class DataResponse(BaseModel):
     columns: List[str]
     data: List[List[str]]
+    
+class TablesResponse(BaseModel):
+    tables: List[str]    
+    
+# Configurações do Redshift a partir do SSM Parameter Store
+redshift_cluster = get_ssm_parameter('/techchallenge_fase1/redshift/cluster-endpoint')
+redshift_database = get_ssm_parameter('/techchallenge_fase1/redshift/database')
+redshift_user = get_ssm_parameter('/techchallenge_fase1/redshift/user')
+redshift_password = get_ssm_parameter('/techchallenge_fase1/redshift/password')
+redshift_port = int(get_ssm_parameter('/techchallenge_fase1/redshift/port'))    
 
 # Função para buscar dados do Redshift
 @cached(cache)
 def fetch_data_from_redshift(table: str, columns: Optional[Tuple[str]], filters: Optional[str]) -> DataResponse:
-    try:
-        # Configurações do Redshift a partir do SSM Parameter Store
-        redshift_cluster = get_ssm_parameter('/techchallenge_fase1/redshift/cluster-endpoint')
-        redshift_database = get_ssm_parameter('/techchallenge_fase1/redshift/database')
-        redshift_user = get_ssm_parameter('/techchallenge_fase1/redshift/user')
-        redshift_password = get_ssm_parameter('/techchallenge_fase1/redshift/password')
-        redshift_port = int(get_ssm_parameter('/techchallenge_fase1/redshift/port'))
-        
+    try:  
         # Conectar ao Redshift
         conn = psycopg2.connect(
             dbname=redshift_database,
@@ -39,7 +42,7 @@ def fetch_data_from_redshift(table: str, columns: Optional[Tuple[str]], filters:
         columns_str = ', '.join(columns) if columns else '*'
         query = f"SELECT {columns_str} FROM {table}"
         if filters:
-            query += f" WHERE {filters};"
+            query += f" WHERE ANO = {filters};"
         #query += " LIMIT 4000;"  # Limite opcional para evitar grandes volumes de dados
         
         # Executar a consulta SQL
@@ -56,5 +59,24 @@ def fetch_data_from_redshift(table: str, columns: Optional[Tuple[str]], filters:
         
         # Retornar os dados em formato JSON
         return DataResponse(columns=columns, data=data)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+def list_tables_from_redshift() -> TablesResponse:
+    try:  
+        # Conectar ao Redshift
+        conn = psycopg2.connect(
+            dbname=redshift_database,
+            user=redshift_user,
+            password=redshift_password,
+            port=redshift_port,
+            host=redshift_cluster
+        )
+        cursor = conn.cursor()
+        cursor.execute("SELECT DISTINCT tablename FROM pg_table_def WHERE schemaname = 'public';")
+        tables = [row[0] for row in cursor.fetchall()]
+        cursor.close()
+        conn.close()
+        return tables
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
