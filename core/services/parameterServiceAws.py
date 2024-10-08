@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 import boto3
 
 # Função para obter parâmetros do SSM Parameter Store

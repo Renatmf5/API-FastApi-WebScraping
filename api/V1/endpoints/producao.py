@@ -11,7 +11,7 @@ async def download_arquivo(usuario_logado: UsuarioModel = Depends(get_current_us
     # Valida se usuario_logado atributo é admin true
     if not usuario_logado.admin:
         return {"status": "Usuário não autorizado"}
-    data = await fetch_data(settings.URL_DOWNLOAD+"/Producao.csv", "Bronze/Producao.parquet")
+    data = await fetch_data(settings.URL_DOWNLOAD+"/Producao.csv", "Lake/Producao.parquet")
     if data:
         # extrair dados e fazer o download no data lake        
         return {"status": "Dados de produção enviados ao Data-Lake com sucesso"}
