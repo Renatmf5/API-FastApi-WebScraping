@@ -2,6 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.V1.api import api_router
 from core.config import settings
+from sqlmodel import SQLModel
+from core.database import engine
+from models.usuario_model import UsuarioModel  # Importe todos os modelos que você deseja criar
 
 app = FastAPI(title=settings.PROJECT_NAME)
 app.include_router(api_router, prefix=settings.API_V1_STR)
@@ -12,6 +15,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+def create_db_and_tables():
+    SQLModel.metadata.create_all(engine)
+
+@app.on_event("startup")
+def on_startup():
+    create_db_and_tables()
 
 if __name__ == "__main__":
     import uvicorn

@@ -35,9 +35,10 @@ async def fetch_data(url: str, file_name: str):
             # Nomear todas as colunas para minúsculas
             df.columns = df.columns.str.lower()
             
-            # Verifica se existe coluna id, se sim remover
+            # Verifica se existe coluna id, se sim remover colunas id e control
             if 'id' in df.columns:
                 df = df.drop(columns=['id'])
+            
                 
             # Identificar colunas que terminam com '.1' e renomeá-las para 'valor'
             df.columns = ['valor' if col.endswith('.1') else col for col in df.columns]
@@ -83,7 +84,8 @@ async def fetch_data(url: str, file_name: str):
                                
             
             
-            
+            if 'control' in df_final.columns:
+                df_final = df_final.drop(columns=['control'])
             # Converte o DataFrame em um arquivo Parquet em memória
             parquet_buffer = io.BytesIO()
             df_final.to_parquet(parquet_buffer, index=False)
