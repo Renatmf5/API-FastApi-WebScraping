@@ -8,7 +8,14 @@ phases:
       - pip install -r requirements.txt
   build:
     commands:
-      - zip -r deploy.zip .
+      - echo Build started on `date`
+      - echo Compiling the Python code...
+      - python -m compileall .
+  post_build:
+    commands:
+      - echo Build completed on `date`
+
 artifacts:
   files:
-    - deploy.zip
+    - '**/*'
+  discard-paths: no
