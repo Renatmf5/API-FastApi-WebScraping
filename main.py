@@ -4,7 +4,7 @@ from api.V1.api import api_router
 from core.config import settings
 from sqlmodel import SQLModel
 from core.database import engine
-from models.usuario_model import UsuarioModel  # Importe todos os modelos que você deseja cria
+from models.usuario_model import UsuarioModel  # Importe todos os modelos que você deseja criar
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
