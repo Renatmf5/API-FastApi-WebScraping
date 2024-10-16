@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
-from core.services.parameterServiceAws import ParameterServiceAws
+from core.services.parameterServiceAws import get_ssm_parameter
+import os
 
 class Settings(BaseSettings):
     # Configurations
@@ -25,9 +26,9 @@ class Settings(BaseSettings):
 
 if os.getenv('ENV') == 'production':
     settings = Settings(
-        JWT_SECRET=ParameterServiceAws.get_ssm_parameter("JWT_SECRET"),
-        DATABASE_URL=ParameterServiceAws.get_ssm_parameter("DATABASE_URL"),
-        BUCKET_NAME=ParameterServiceAws.get_ssm_parameter("BUCKET_NAME")
+        JWT_SECRET=get_ssm_parameter("JWT_SECRET"),
+        DATABASE_URL=get_ssm_parameter("DATABASE_URL"),
+        BUCKET_NAME=get_ssm_parameter("BUCKET_NAME")
     )
 else:
     settings = Settings()
