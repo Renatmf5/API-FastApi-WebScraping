@@ -26,9 +26,9 @@ class Settings(BaseSettings):
 
 if os.getenv('ENV') == 'production':
     settings = Settings(
-        JWT_SECRET=get_ssm_parameter("JWT_SECRET"),
-        DATABASE_URL=get_ssm_parameter("DATABASE_URL"),
-        BUCKET_NAME=get_ssm_parameter("BUCKET_NAME")
+        JWT_SECRET=get_ssm_parameter("/my-fastApi-app/JWT_SECRET"),
+        DATABASE_URL=get_ssm_parameter("/my-fastApi-app/DATABASE_URL"),
+        BUCKET_NAME=get_ssm_parameter("/my-fastApi-app/BUCKET_NAME")
     )
 else:
     settings = Settings()
