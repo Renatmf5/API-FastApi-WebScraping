@@ -9,7 +9,6 @@ from api.V1.endpoints import usuarios
 from api.V1.endpoints import fetch_data_S3
 from api.V1.endpoints import train_models
 
-
 api_router = APIRouter()
 
 api_router.include_router(producao.router, prefix="/producao", tags=["producao"])
@@ -20,3 +19,7 @@ api_router.include_router(exportacao.router, prefix="/exportacao", tags=["export
 api_router.include_router(usuarios.router, prefix="/usuarios", tags=["usuarios"])
 api_router.include_router(fetch_data_S3.router, prefix="/fetch-data", tags=["fetch-data"])
 api_router.include_router(train_models.router, prefix="/ml-models", tags=["train-models"])
+
+@api_router.get("/")
+def read_root():
+    return {"message": "API is running"}
