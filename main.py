@@ -25,6 +25,10 @@ def get_application() -> FastAPI:
     def on_startup():
         create_db_and_tables()
 
+    @app.get("/")
+    def read_root():
+        return {"message": "API is running"}
+
     return app
 
 app = get_application()
