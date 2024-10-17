@@ -21,5 +21,5 @@ echo "Verificando se o uvicorn está no PATH" | tee -a /home/ec2-user/fastapi-ap
 which uvicorn | tee -a /home/ec2-user/fastapi-app/deploy.log
 
 # Executar o comando uvicorn para iniciar a aplicação FastAPI em segundo plano e redirecionar a saída para um arquivo de log
-nohup uvicorn main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
+nohup uvicorn main:app --host 0.0.0.0 --port 80 > app.log 2>&1 &
 echo "Comando uvicorn executado" | tee -a /home/ec2-user/fastapi-app/deploy.log

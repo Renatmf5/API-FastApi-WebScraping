@@ -5,6 +5,7 @@ from core.config import settings
 from sqlmodel import SQLModel
 from core.database import engine
 from models.usuario_model import UsuarioModel  # Importe todos os modelos que você deseja criar
+import os
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
@@ -30,4 +31,8 @@ app = get_application()
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level=settings.LOG_LEVEL, reload=settings.ENV == "development")
+    env = os.getenv("ENV", "development")
+    if env == "production":
+        uvicorn.run("main:app", host="0.0.0.0", port=80, log_level=settings.LOG_LEVEL)
+    else:
+        uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level=settings.LOG_LEVEL, reload=True)
