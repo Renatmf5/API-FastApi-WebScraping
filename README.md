@@ -249,13 +249,13 @@ graph TD;
     A -->|Requisição para baixar dados| D[FastAPI Endpoint /producao/download-arquivo]
     D --> E[Executa Web Scraper para coleta de dados]
     E --> F[Envia dados para o Data Lake (S3)]
-    F --> G[FastAPI - Confirmação de armazenamento]
+    F --> G[Confirmação de armazenamento pela FastAPI]
     
     A -->|Treinamento de Modelo| H[FastAPI Endpoint /ml-models/train]
     H --> I[Baixa dados do S3]
     I --> J[Treina Modelo de Machine Learning]
     J --> K[Armazena Modelo no S3]
-    K --> L[FastAPI - Confirmação de treinamento]
+    K --> L[Confirmação de treinamento pela FastAPI]
 
     A -->|Requisição de Previsão| M[FastAPI Endpoint /ml-models/predict]
     M --> N[Baixa Modelo do S3]
