@@ -466,5 +466,4 @@ sequenceDiagram
 - **[Banco de Dados (Auth)]**: O banco de dados usado para armazenar e verificar as credenciais de autenticação.
 - **[Data Lake (AWS S3)]**: O repositório de armazenamento usado como Data Lake para manter dados brutos e processados
 - **[Web Scraper]**: O componente que faz web scraping para coletar dados de fontes externas.
-- **[Envia dados para S3]**: Os dados coletados pelo scraper são enviados e armazenados no AWS S3 (Data Lake).
 - **[Machine Learning Model]**: O modelo de machine learning que é treinado e utilizado para gerar previsões.
