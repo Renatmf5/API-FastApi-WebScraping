@@ -279,3 +279,19 @@ graph LR;
 - **S3**: Armazena os dados e os modelos.
 - **MLModel**: Modelos de machine learning gerados pelo sistema.
 
+- **Diagramas de sequência**:
+  
+  ```markdown
+  ```mermaid
+  sequenceDiagram
+      participant User
+      participant API
+      participant S3
+      participant Model
+      User->>API: Envia Requisição
+      API->>S3: Faz download de dados
+      S3-->>API: Retorna dados
+      API->>Model: Treina modelo
+      Model-->>API: Retorna modelo treinado
+      API-->>User: Retorna a resposta
+  ```
