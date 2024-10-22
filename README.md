@@ -262,16 +262,27 @@ graph TD;
 Aqui, um diagrama de como sua aplicação FastAPI interage com os serviços da AWS (como S3 e EC2) e o banco de dados:
 
 ```mermaid
-graph LR;
-    Client[Usuário] -->|HTTP Request| FastAPI
-    FastAPI -->|Autenticação JWT| AuthDB[(Banco de Dados)]
-    FastAPI -->|Processamento de Dados| Processamento[Funções de Processamento]
-    Processamento --> S3[(Data Lake - S3)]
-    Processamento -->|Treinamento de Modelo| MLModel[(Modelos de ML)]
-    S3 -->|Consulta| FastAPI
-    MLModel --> FastAPI
-    FastAPI -->|Resposta| Client[Usuário]
-```
+graph TD;
+    A[Usuário] -->|Login| B[FastAPI Endpoint /login]
+    B --> C[Verifica credenciais no Banco de Dados]
+    C -->|Token JWT| A
+    
+    A -->|Requisição para baixar dados| D[FastAPI Endpoint /producao/download-arquivo]
+    D --> E[Executa Web Scraper para coleta de dados]
+    E --> F[Envia dados para o Data Lake (S3)]
+    F --> G[FastAPI - Confirmação de armazenamento]
+    
+    A -->|Treinamento de Modelo| H[FastAPI Endpoint /ml-models/train]
+    H --> I[Baixa dados do S3]
+    I --> J[Treina Modelo de Machine Learning]
+    J --> K[Armazena Modelo no S3]
+    K --> L[FastAPI - Confirmação de treinamento]
+
+    A -->|Requisição de Previsão| M[FastAPI Endpoint /ml-models/predict]
+    M --> N[Baixa Modelo do S3]
+    N --> O[Gera Previsões]
+    O --> A
+```    
 - **Client**: O usuário interage com a API.
 - **FastAPI**: A aplicação principal que processa as requisições.
 - **AuthDB**: Banco de dados usado para autenticação de usuários.
@@ -280,17 +291,37 @@ graph LR;
 - **MLModel**: Modelos de machine learning gerados pelo sistema.
 
 - **Diagramas de sequência**:
-  
-  ```mermaid
-  sequenceDiagram
-      participant User
-      participant API
-      participant S3
-      participant Model
-      User->>API: Envia Requisição
-      API->>S3: Faz download de dados
-      S3-->>API: Retorna dados
-      API->>Model: Treina modelo
-      Model-->>API: Retorna modelo treinado
-      API-->>User: Retorna a resposta
-  ```
+```mermaid
+sequenceDiagram
+    participant User as Usuário
+    participant API as API FastAPI
+    participant AuthDB as Banco de Dados (Auth)
+    participant S3 as Data Lake (AWS S3)
+    participant Scraper as Web Scraper
+    participant ML as Machine Learning Model
+
+    User->>API: Login (envia credenciais)
+    API->>AuthDB: Verifica credenciais
+    AuthDB-->>API: Retorna status da autenticação
+    API-->>User: Retorna token JWT
+
+    User->>API: Requisição para baixar dados (Ex: Produção)
+    API->>Scraper: Executa web scraping para coletar dados
+    Scraper-->>API: Retorna dados coletados
+    API->>S3: Envia dados para armazenamento no S3
+
+    User->>API: Solicitação de treinamento de modelo de ML
+    API->>S3: Faz download dos dados para treinamento
+    S3-->>API: Retorna dados armazenados
+    API->>ML: Treina o modelo com os dados
+    ML-->>API: Retorna modelo treinado
+    API-->>S3: Armazena o modelo treinado no S3
+    API-->>User: Retorna confirmação de treinamento
+
+    User->>API: Requisição de previsão (prediction)
+    API->>S3: Baixa modelo treinado do S3
+    S3-->>API: Retorna o modelo
+    API->>ML: Gera previsões
+    ML-->>API: Retorna previsões
+    API-->>User: Retorna previsões ao usuário
+```
