@@ -246,7 +246,7 @@ graph TD;
     F --> G[Train Model]
     G --> H[Armazena o modelo no S3]
     H --> I[Retorna resposta ao usuário]
-
+```
 - **A**: Usuário autenticado faz a requisição à API.
 - **B**: FastAPI processa a requisição e aciona a função de scraper ou upload para o S3.
 - **C**: O scraper coleta os dados de fontes externas.
@@ -255,8 +255,7 @@ graph TD;
 - **F**: Dados processados são novamente salvos no S3.
 - **G**: Modelo de Machine Learning é treinado.
 - **H**: Modelo treinado é salvo no S3.
-- **I**: A resposta é retornada ao usuário.
-```
+- **I**: A resposta é retornada ao usuário
 
 ### 2. **Diagrama de Arquitetura da Aplicação**
 
@@ -273,11 +272,11 @@ graph LR;
     S3 -->|Consulta| FastAPI
     MLModel --> FastAPI
     FastAPI -->|Resposta| Client[Usuário]
+```
 - **Client**: O usuário interage com a API.
 - **FastAPI**: A aplicação principal que processa as requisições.
 - **AuthDB**: Banco de dados usado para autenticação de usuários.
 - **Processamento**: Funções de processamento de dados (como filtros e agregações).
 - **S3**: Armazena os dados e os modelos.
 - **MLModel**: Modelos de machine learning gerados pelo sistema.
-```
 ```
