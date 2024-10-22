@@ -12,6 +12,6 @@ async def download_arquivo(usuario_logado: UsuarioModel = Depends(get_current_us
         return {"status": "Usuário não autorizado"}
     data = await fetch_data(settings.URL_DOWNLOAD+"/Comercio.csv", "Lake/Comercio.parquet")
     if data:     
-        return {"status": "Dados de produção extraídos com sucesso"}
+        return {"status": "Dados de comercialização enviados ao Data-Lake com sucesso"}
     else:
-        return {"status": "Falha ao extrair dados de produção"}
+        return {"status": "Falha ao extrair dados de comercialização"}

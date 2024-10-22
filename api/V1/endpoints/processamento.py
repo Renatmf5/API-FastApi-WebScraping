@@ -15,6 +15,6 @@ async def download_arquivos(usuario_logado: UsuarioModel = Depends(get_current_u
     Mesa_data = await fetch_data(settings.URL_DOWNLOAD+"/ProcessaMesa.csv", "Lake/ProcessaMesa.parquet")
     SemClass_data = await fetch_data(settings.URL_DOWNLOAD+"/ProcessaSemclass.csv", "Lake/ProcessaSemclass.parquet")
     if Viniferas_data and Americanas_data and Mesa_data and SemClass_data:     
-        return {"status": "Dados de produção extraídos com sucesso"}
+        return {"status": "Dados de importação enviados ao Data-Lake com sucesso"}
     else:
-        return {"status": "Falha ao extrair dados de produção"}
+        return {"status": "Falha ao extrair dados de importação"}

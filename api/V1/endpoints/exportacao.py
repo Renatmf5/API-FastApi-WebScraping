@@ -15,6 +15,6 @@ async def download_arquivo(usuario_logado: UsuarioModel = Depends(get_current_us
     Uvas_frescas = await fetch_data(settings.URL_DOWNLOAD+"/ExpUva.csv", "Lake/ExpUva.parquet")
     suco_de_uva = await fetch_data(settings.URL_DOWNLOAD+"/ExpSuco.csv", "Lake/ExpSuco.parquet")
     if vinhos_de_mesa and espumantes and Uvas_frescas and suco_de_uva:      
-        return {"status": "Dados de produção extraídos com sucesso"}
+        return {"status": "Dados de exportação enviados ao Data-Lake com sucesso"}
     else:
-        return {"status": "Falha ao extrair dados de produção"}
+        return {"status": "Falha ao extrair dados de exportação"}
