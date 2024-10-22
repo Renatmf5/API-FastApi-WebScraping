@@ -259,7 +259,7 @@ graph TD;
     A -->|GET /usuarios/usuarios| O[FastAPI /usuarios Endpoint]
     O --> P[Retorna lista de todos os usuários 200 OK]
 
-    A -->|PUT /usuarios/{usuario_id}| Q[FastAPI /usuarios/{id} Endpoint]
+    A -->|PUT /usuarios/usuario_id| Q[FastAPI /usuarios/id Endpoint]
     Q --> R[Verifica se o usuário existe no Banco de Dados]
     R -->|Usuário encontrado| S[Atualiza dados do usuário]
     S --> T[Retorna 202 Accepted]
