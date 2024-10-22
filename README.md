@@ -240,29 +240,65 @@ Você pode acessar a documentação interativa da API no formato Swagger ou ReDo
 
 ```mermaid
 graph TD;
-    A[Usuário] -->|Envia credenciais| B[FastAPI /usuarios/login]
-    B --> C[Verifica no Banco de Dados Auth]
+    A[Usuário] -->|POST /usuarios/login| B[FastAPI /login Endpoint]
+    B --> C[Verifica credenciais no Banco de Dados (Auth)]
     C -->|Credenciais válidas| D[Gera Token JWT]
-    D --> E[Retorna Token JWT ao Usuário]
-    
-    A -->|Acessa Endpoint Protegido| F[FastAPI Endpoint Protegido]
-    F -->|Verifica Token| G[Middleware de Autorização]
-    G -->|Token válido| H[Acesso Concedido]
-    G -->|Token inválido| I[Acesso Negado]
+    C -->|Credenciais inválidas| F[Retorna 401 Unauthorized]
+    D --> E[Retorna 200 OK com Token JWT]
+
+    A -->|POST /usuarios/signup| G[FastAPI /signup Endpoint]
+    G --> H[Verifica disponibilidade do username no Banco de Dados]
+    H -->|Username disponível| I[Criar novo usuário]
+    H -->|Username já existente| J[Retorna 406 Not Acceptable]
+    I --> K[Retorna 201 Created]
+
+    A -->|GET /usuarios/logado| L[FastAPI /logado Endpoint]
+    L -->|Token JWT válido| M[Retorna 200 OK com dados do usuário]
+    L -->|Token JWT inválido| N[Retorna 401 Unauthorized]
+
+    A -->|GET /usuarios/usuarios| O[FastAPI /usuarios Endpoint]
+    O --> P[Retorna lista de todos os usuários 200 OK]
+
+    A -->|PUT /usuarios/{usuario_id}| Q[FastAPI /usuarios/{id} Endpoint]
+    Q --> R[Verifica se o usuário existe no Banco de Dados]
+    R -->|Usuário encontrado| S[Atualiza dados do usuário]
+    S --> T[Retorna 202 Accepted]
+    R -->|Usuário não encontrado| U[Retorna 404 Not Found]
 ```
 #### **Legenda para o Diagrama de Arquitetura**:
 
-- **A [Usuário]**: Representa o cliente que tenta acessar a API.
-- **B [FastAPI /usuarios/login]**: Endpoint de login da API onde o usuário envia suas credenciais (nome de usuário e senha).
-- **C [Verifica no Banco de Dados (Auth)]**: A API faz uma consulta ao banco de dados para verificar se as credenciais fornecidas são válidas.
-- **D [Gera Token JWT]**: Caso as credenciais sejam válidas, a API gera um token JWT (JSON Web Token) para autenticação.
-- **E [Retorna Token JWT ao Usuário]**: O token JWT é retornado ao usuário, que pode usá-lo para acessar endpoints protegidos.
-- **F [FastAPI Endpoint Protegido]**: O usuário tenta acessar um endpoint que exige autenticação.
-- **G [Middleware de Autorização]**: Um middleware da FastAPI verifica o token JWT incluído na requisição.
-- **H [Acesso Concedido]**: Se o token JWT for válido, o usuário recebe acesso ao recurso protegido.
-- **I [Acesso Negado]**: Se o token for inválido ou ausente, o acesso ao recurso é negado.
+### **Legenda e Explicação do Diagrama de Arquitetura:**
 
-### **2. Diagrama de Sequência: Autenticação e Autorização**
+1. **A [Usuário]**: Representa o cliente que está interagindo com a API e realizando ações como login, cadastro, consulta de dados e atualização de informações.
+   
+2. **POST /usuarios/login**:
+   - O usuário envia suas credenciais (nome de usuário e senha) para o endpoint `/usuarios/login`.
+   - A **API** verifica as credenciais no **Banco de Dados**.
+   - Se as credenciais forem válidas, a API gera um **Token JWT** e retorna um `200 OK` junto com o token.
+   - Se as credenciais forem inválidas, a API retorna um `401 Unauthorized`.
+
+3. **POST /usuarios/signup**:
+   - O usuário envia seus dados para criar uma nova conta através do endpoint `/usuarios/signup`.
+   - A API verifica se o **username** já existe no banco de dados.
+   - Se o nome de usuário estiver disponível, um novo usuário é criado, e a API retorna um `201 Created`.
+   - Se o nome de usuário já estiver em uso, a API retorna um `406 Not Acceptable`.
+
+4. **GET /usuarios/logado**:
+   - O usuário solicita informações sobre sua conta autenticada através do endpoint `/usuarios/logado`, enviando um token JWT no cabeçalho.
+   - Se o token for válido, a API retorna os detalhes do usuário (`200 OK`).
+   - Se o token for inválido ou ausente, a API retorna um `401 Unauthorized`.
+
+5. **GET /usuarios/usuarios**:
+   - O usuário pode obter uma lista de todos os usuários cadastrados no sistema através do endpoint `/usuarios/usuarios`.
+   - A API retorna uma lista com os usuários registrados (`200 OK`).
+
+6. **PUT /usuarios/{usuario_id}**:
+   - O usuário pode atualizar as informações de uma conta específica através do endpoint `/usuarios/{id}`.
+   - A API verifica se o usuário com o **ID** especificado existe no banco de dados.
+   - Se o usuário for encontrado, as informações são atualizadas, e a API retorna um `202 Accepted`.
+   - Se o usuário não for encontrado, a API retorna um `404 Not Found`.
+
+### **2. Diagrama de Sequência: Autenticação e Autorização com Detalhes dos Endpoints**
 
 ```mermaid
 sequenceDiagram
@@ -271,25 +307,62 @@ sequenceDiagram
     participant AuthDB as Banco de Dados (Auth)
     participant JWT as Token JWT
     
-    User->>API: Envia credenciais (login)
+    User->>API: POST /usuarios/login (envia username e password)
     API->>AuthDB: Verifica credenciais
-    AuthDB-->>API: Retorna status (válido/inválido)
+    AuthDB-->>API: Credenciais válidas
     API->>JWT: Gera Token JWT
-    API-->>User: Retorna Token JWT
-    
-    User->>API: Acessa Endpoint Protegido
+    API-->>User: Retorna 200 OK com Token JWT
+    AuthDB-->>API: Credenciais inválidas
+    API-->>User: Retorna 401 Unauthorized
+
+    User->>API: POST /usuarios/signup (envia username, password)
+    API->>AuthDB: Verifica se username está disponível
+    AuthDB-->>API: Username disponível
+    API->>AuthDB: Cria novo usuário
+    API-->>User: Retorna 201 Created
+    AuthDB-->>API: Username já existente
+    API-->>User: Retorna 406 Not Acceptable
+
+    User->>API: GET /usuarios/logado (envia Token JWT)
     API->>JWT: Verifica Token JWT
-    JWT-->>API: Token válido/inválido
-    API-->>User: Acesso Concedido/Acesso Negado
+    JWT-->>API: Token válido
+    API-->>User: Retorna 200 OK com dados do usuário
+    JWT-->>API: Token inválido
+    API-->>User: Retorna 401 Unauthorized
+
+    User->>API: PUT /usuarios/{id} (envia novos dados)
+    API->>AuthDB: Verifica se o usuário existe
+    AuthDB-->>API: Usuário encontrado
+    API-->>User: Retorna 202 Accepted
+    AuthDB-->>API: Usuário não encontrado
+    API-->>User: Retorna 404 Not Found
 ```
 
-#### **Legenda para o Diagrama de Sequência**:
+### **Legenda e Explicação do Diagrama de Sequência**:
 
-1. **User [Usuário]**: O cliente envia suas credenciais para login.
-2. **API [FastAPI]**: A API processa a requisição e verifica as credenciais no banco de dados.
-3. **AuthDB [Banco de Dados (Auth)]**: O banco de dados de autenticação, que armazena as credenciais dos usuários.
-4. **JWT [Token JWT]**: O token JWT é gerado pela API se as credenciais forem válidas e é usado posteriormente para autorização.
+1. **POST /usuarios/login**:
+   - O **Usuário** envia o nome de usuário e senha para o endpoint `/usuarios/login`.
+   - A **API** verifica as credenciais no **Banco de Dados** (**AuthDB**).
+   - Se as credenciais forem válidas, a **API** gera e retorna um **Token JWT** (`200 OK`).
+   - Se as credenciais forem inválidas, a **API** retorna `401 Unauthorized`.
 
+2. **POST /usuarios/signup**:
+   - O **Usuário** tenta criar uma nova conta enviando nome de usuário e senha para o endpoint `/usuarios/signup`.
+   - A **API** verifica no **AuthDB** se o nome de usuário já existe.
+   - Se o nome de usuário estiver disponível, a API cria o novo usuário e retorna `201 Created`.
+   - Se o nome de usuário já existir, a API retorna `406 Not Acceptable`.
+
+3. **GET /usuarios/logado**:
+   - O **Usuário** tenta obter suas informações enviando um token JWT para o endpoint `/usuarios/logado`.
+   - A **API** verifica a validade do **Token JWT**.
+   - Se o token for válido, a **API** retorna os detalhes do usuário (`200 OK`).
+   - Se o token for inválido ou ausente, a **API** retorna `401 Unauthorized`.
+
+4. **PUT /usuarios/{usuario_id}**:
+   - O **Usuário** tenta atualizar os dados de uma conta existente.
+   - A **API** verifica no **AuthDB** se o usuário com o ID fornecido existe.
+   - Se o usuário for encontrado, os dados são atualizados, e a **API** retorna `202 Accepted`.
+   - Se o usuário não for encontrado, a **API** retorna `404 Not Found`.
 
 # Fluxograma do Processo de Manipulação de Dados
 
