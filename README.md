@@ -376,10 +376,13 @@ graph TD;
     B --> C[Verifica credenciais no Banco de Dados]
     C -->|Token JWT| A
     
-    A -->|Requisição para baixar dados| D[FastAPI /producao/download]
+    A -->|Requisição para baixar dados| D[FastAPI /producao/download-arquivo]
     D --> E[Executa Web Scraper]
     E --> F[Envia dados para S3]
     F --> G[Confirma armazenamento]
+    
+    A -->|Verificar dados no S3| P[FastAPI /fetch-data]
+    P --> Q[Lista arquivos no S3]
     
     A -->|Treina Modelo| H[FastAPI /ml-models/train]
     H --> I[Baixa dados do S3]
@@ -387,6 +390,7 @@ graph TD;
     J --> K[Armazena modelo no S3]
     K --> L[Confirma treinamento]
 
+    A -->|Verificar dados no S3| P
     A -->|Requisição de Previsão| M[FastAPI /ml-models/predict]
     M --> N[Baixa modelo do S3]
     N --> O[Gera previsões]
@@ -395,11 +399,14 @@ graph TD;
 - **[Usuário]**: Representa o cliente ou usuário que interage com a API
 - **[FastAPI Endpoint /login]**: O endpoint da API que recebe as credenciais do usuário para autenticação.
 - **[Verifica credenciais no Banco de Dados]**: A API faz uma verificação das credenciais no banco de dados de autenticação.
-- **[FastAPI /producao/download]**: Endpoint que processa uma requisição para baixar dados de produção, por exemplo.
+- **[FastAPI /producao/download-arquivo]**: Endpoint que processa uma requisição para baixar dados de produção, por exemplo.
 - **[Executa Web Scraper]**: Executa um web scraper que coleta dados de uma fonte externa (como um site).
 - **[Envia dados para S3]**: Os dados coletados pelo scraper são enviados e armazenados no AWS S3 (Data Lake).
 - **[Confirma armazenamento]**: Confirma que os dados foram enviados e armazenados com sucesso no S3.
+- **[FastAPI /fetch-data]**: Endpoint para listar e verificar os dados armazenados no S3.
+- **[Lista arquivos no S3]**: A API retorna uma lista dos arquivos armazenados no S3.
 - **[FastAPI /ml-models/train]**: Endpoint que processa uma solicitação de treinamento de modelo de machine learning.
+- **[Baixa dados do S3]**: Download dos dados armazenados no S3 para treinamento.
 - **[Treina modelo de ML]**: A API faz o download dos dados armazenados no S3 para treinamento do modelo.
 - **[Armazena modelo no S3]**: O processo de treinamento de um modelo de machine learning com os dados baixados. 
 - **[Confirma treinamento]**: O modelo treinado é armazenado no S3 para uso posterior. 
@@ -428,6 +435,11 @@ sequenceDiagram
     Scraper-->>API: Retorna dados coletados
     API->>S3: Envia dados para armazenamento no S3
 
+    User->>API: Verificar dados no S3 (fetch-data)
+    API->>S3: Lista arquivos no S3
+    S3-->>API: Retorna lista de arquivos
+    API-->>User: Retorna lista de arquivos
+
     User->>API: Solicitação de treinamento de modelo de ML
     API->>S3: Faz download dos dados para treinamento
     S3-->>API: Retorna dados armazenados
@@ -435,6 +447,11 @@ sequenceDiagram
     ML-->>API: Retorna modelo treinado
     API-->>S3: Armazena o modelo treinado no S3
     API-->>User: Retorna confirmação de treinamento
+
+    User->>API: Verificar dados no S3 (fetch-data)
+    API->>S3: Lista arquivos no S3
+    S3-->>API: Retorna lista de arquivos
+    API-->>User: Retorna lista de arquivos
 
     User->>API: Requisição de previsão (prediction)
     API->>S3: Baixa modelo treinado do S3
