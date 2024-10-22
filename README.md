@@ -246,20 +246,20 @@ graph TD;
     B --> C[Verifica credenciais no Banco de Dados]
     C -->|Token JWT| A
     
-    A -->|Requisição para baixar dados| D[FastAPI Endpoint /producao/download-arquivo]
-    D --> E[Executa Web Scraper para coleta de dados]
-    E --> F[Envia dados para o Data Lake (S3)]
-    F --> G[Confirmação de armazenamento pela FastAPI]
+    A -->|Requisição para baixar dados| D[FastAPI /producao/download]
+    D --> E[Executa Web Scraper]
+    E --> F[Envia dados para S3]
+    F --> G[Confirma armazenamento]
     
-    A -->|Treinamento de Modelo| H[FastAPI Endpoint /ml-models/train]
+    A -->|Treina Modelo| H[FastAPI /ml-models/train]
     H --> I[Baixa dados do S3]
-    I --> J[Treina Modelo de Machine Learning]
-    J --> K[Armazena Modelo no S3]
-    K --> L[Confirmação de treinamento pela FastAPI]
+    I --> J[Treina modelo de ML]
+    J --> K[Armazena modelo no S3]
+    K --> L[Confirma treinamento]
 
-    A -->|Requisição de Previsão| M[FastAPI Endpoint /ml-models/predict]
-    M --> N[Baixa Modelo do S3]
-    N --> O[Gera Previsões]
+    A -->|Requisição de Previsão| M[FastAPI /ml-models/predict]
+    M --> N[Baixa modelo do S3]
+    N --> O[Gera previsões]
     O --> A
 ```
 - **A**: Usuário autenticado faz a requisição à API.
