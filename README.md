@@ -236,28 +236,7 @@ Você pode acessar a documentação interativa da API no formato Swagger ou ReDo
 
 # Fluxograma do Processo de Manipulação de Dados
 
-```mermaid
-graph TD;
-    A[Usuário Autenticado] -->|Requisição| B[FastAPI Endpoint]
-    B --> C[Baixa dados via Web Scraper]
-    C --> D[Salva dados no S3]
-    D --> E[Processa dados via Funções]
-    E --> F[Salva resultados no S3]
-    F --> G[Train Model]
-    G --> H[Armazena o modelo no S3]
-    H --> I[Retorna resposta ao usuário]
-```
-- **A**: Usuário autenticado faz a requisição à API.
-- **B**: FastAPI processa a requisição e aciona a função de scraper ou upload para o S3.
-- **C**: O scraper coleta os dados de fontes externas.
-- **D**: Os dados são salvos no S3.
-- **E**: Dados são processados (filtrados, transformados).
-- **F**: Dados processados são novamente salvos no S3.
-- **G**: Modelo de Machine Learning é treinado.
-- **H**: Modelo treinado é salvo no S3.
-- **I**: A resposta é retornada ao usuário
-
-### 2. **Diagrama de Arquitetura da Aplicação**
+### 1. **Diagrama de Arquitetura da Aplicação**
 
 Aqui, um diagrama de como sua aplicação FastAPI interage com os serviços da AWS (como S3 e EC2) e o banco de dados:
 
@@ -282,15 +261,19 @@ graph TD;
     M --> N[Baixa Modelo do S3]
     N --> O[Gera Previsões]
     O --> A
-```    
-- **Client**: O usuário interage com a API.
-- **FastAPI**: A aplicação principal que processa as requisições.
-- **AuthDB**: Banco de dados usado para autenticação de usuários.
-- **Processamento**: Funções de processamento de dados (como filtros e agregações).
-- **S3**: Armazena os dados e os modelos.
-- **MLModel**: Modelos de machine learning gerados pelo sistema.
+```
+- **A**: Usuário autenticado faz a requisição à API.
+- **B**: FastAPI processa a requisição e aciona a função de scraper ou upload para o S3.
+- **C**: O scraper coleta os dados de fontes externas.
+- **D**: Os dados são salvos no S3.
+- **E**: Dados são processados (filtrados, transformados).
+- **F**: Dados processados são novamente salvos no S3.
+- **G**: Modelo de Machine Learning é treinado.
+- **H**: Modelo treinado é salvo no S3.
+- **I**: A resposta é retornada ao usuário   
 
-- **Diagramas de sequência**:
+### 2.  - **Diagramas de sequência**:
+
 ```mermaid
 sequenceDiagram
     participant User as Usuário
@@ -325,3 +308,10 @@ sequenceDiagram
     ML-->>API: Retorna previsões
     API-->>User: Retorna previsões ao usuário
 ```
+
+- **Client**: O usuário interage com a API.
+- **FastAPI**: A aplicação principal que processa as requisições.
+- **AuthDB**: Banco de dados usado para autenticação de usuários.
+- **Processamento**: Funções de processamento de dados (como filtros e agregações).
+- **S3**: Armazena os dados e os modelos.
+- **MLModel**: Modelos de machine learning gerados pelo sistema.
