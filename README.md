@@ -14,16 +14,16 @@
 - **Autenticação**: 
   - **POST /usuarios/login**: Autentica um usuário e retorna um token JWT.
     - **Parâmetros**:
-      - **username**: string - Nome de usuário
-      - **password**: string - Senha do usuário
+      -- **username**: string - Nome de usuário
+      -- **password**: string - Senha do usuário
     - **Resposta**: 
      - **200 OK**: Token JWT válido
      - **401 Unauthorized**: Credenciais inválidas
 
   - **POST /usuarios/signup**: Cria um novo usuário.
     - **Parâmetros**:
-        - **username**: string - Nome de usuário
-        - **password**: string - Senha do usuário
+        -- **username**: string - Nome de usuário
+        -- **password**: string - Senha do usuário
         - **admin**: boolean (opcional) - Indica se o usuário terá privilégios de administrador
       - **Resposta**: 
       - **201 Created**: Usuário criado com sucesso
