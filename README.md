@@ -261,7 +261,6 @@ graph TD;
 
 Aqui, um diagrama de como sua aplicação FastAPI interage com os serviços da AWS (como S3 e EC2) e o banco de dados:
 
-```markdown
 ```mermaid
 graph LR;
     Client[Usuário] -->|HTTP Request| FastAPI
@@ -279,4 +278,4 @@ graph LR;
 - **Processamento**: Funções de processamento de dados (como filtros e agregações).
 - **S3**: Armazena os dados e os modelos.
 - **MLModel**: Modelos de machine learning gerados pelo sistema.
-```
+
