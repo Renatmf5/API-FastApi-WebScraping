@@ -234,6 +234,63 @@ Você pode acessar a documentação interativa da API no formato Swagger ou ReDo
 │   └── before_install.sh
 ```
 
+# Fluxograma do Processo de Autenticação da API
+
+## 1. **Diagrama de autenticação**
+
+```mermaid
+graph TD;
+    A[Usuário] -->|Envia credenciais| B[FastAPI /usuarios/login]
+    B --> C[Verifica no Banco de Dados (Auth)]
+    C -->|Credenciais válidas| D[Gera Token JWT]
+    D --> E[Retorna Token JWT ao Usuário]
+    
+    A -->|Acessa Endpoint Protegido| F[FastAPI Endpoint Protegido]
+    F -->|Verifica Token| G[Middleware de Autorização]
+    G -->|Token válido| H[Acesso Concedido]
+    G -->|Token inválido| I[Acesso Negado]
+```
+#### **Legenda para o Diagrama de Arquitetura**:
+
+- **A [Usuário]**: Representa o cliente que tenta acessar a API.
+- **B [FastAPI /usuarios/login]**: Endpoint de login da API onde o usuário envia suas credenciais (nome de usuário e senha).
+- **C [Verifica no Banco de Dados (Auth)]**: A API faz uma consulta ao banco de dados para verificar se as credenciais fornecidas são válidas.
+- **D [Gera Token JWT]**: Caso as credenciais sejam válidas, a API gera um token JWT (JSON Web Token) para autenticação.
+- **E [Retorna Token JWT ao Usuário]**: O token JWT é retornado ao usuário, que pode usá-lo para acessar endpoints protegidos.
+- **F [FastAPI Endpoint Protegido]**: O usuário tenta acessar um endpoint que exige autenticação.
+- **G [Middleware de Autorização]**: Um middleware da FastAPI verifica o token JWT incluído na requisição.
+- **H [Acesso Concedido]**: Se o token JWT for válido, o usuário recebe acesso ao recurso protegido.
+- **I [Acesso Negado]**: Se o token for inválido ou ausente, o acesso ao recurso é negado.
+
+### **2. Diagrama de Sequência: Autenticação e Autorização**
+
+```markdown
+```mermaid
+sequenceDiagram
+    participant User as Usuário
+    participant API as API FastAPI
+    participant AuthDB as Banco de Dados (Auth)
+    participant JWT as Token JWT
+    
+    User->>API: Envia credenciais (login)
+    API->>AuthDB: Verifica credenciais
+    AuthDB-->>API: Retorna status (válido/inválido)
+    API->>JWT: Gera Token JWT
+    API-->>User: Retorna Token JWT
+    
+    User->>API: Acessa Endpoint Protegido
+    API->>JWT: Verifica Token JWT
+    JWT-->>API: Token válido/inválido
+    API-->>User: Acesso Concedido/Acesso Negado
+```
+#### **Legenda para o Diagrama de Sequência**:
+
+1. **User [Usuário]**: O cliente envia suas credenciais para login.
+2. **API [FastAPI]**: A API processa a requisição e verifica as credenciais no banco de dados.
+3. **AuthDB [Banco de Dados (Auth)]**: O banco de dados de autenticação, que armazena as credenciais dos usuários.
+4. **JWT [Token JWT]**: O token JWT é gerado pela API se as credenciais forem válidas e é usado posteriormente para autorização.
+
+
 # Fluxograma do Processo de Manipulação de Dados
 
 ### 1. **Diagrama de Arquitetura da Aplicação**
@@ -262,15 +319,20 @@ graph TD;
     N --> O[Gera previsões]
     O --> A
 ```
-- **A**: Usuário autenticado faz a requisição à API.
-- **B**: FastAPI processa a requisição e aciona a função de scraper ou upload para o S3.
-- **C**: O scraper coleta os dados de fontes externas.
-- **D**: Os dados são salvos no S3.
-- **E**: Dados são processados (filtrados, transformados).
-- **F**: Dados processados são novamente salvos no S3.
-- **G**: Modelo de Machine Learning é treinado.
-- **H**: Modelo treinado é salvo no S3.
-- **I**: A resposta é retornada ao usuário   
+- **[Usuário]**: Representa o cliente ou usuário que interage com a API
+- **[FastAPI Endpoint /login]**: O endpoint da API que recebe as credenciais do usuário para autenticação.
+- **[Verifica credenciais no Banco de Dados]**: A API faz uma verificação das credenciais no banco de dados de autenticação.
+- **[FastAPI /producao/download]**: Endpoint que processa uma requisição para baixar dados de produção, por exemplo.
+- **[Executa Web Scraper]**: Executa um web scraper que coleta dados de uma fonte externa (como um site).
+- **[Envia dados para S3]**: Os dados coletados pelo scraper são enviados e armazenados no AWS S3 (Data Lake).
+- **[Confirma armazenamento]**: Confirma que os dados foram enviados e armazenados com sucesso no S3.
+- **[FastAPI /ml-models/train]**: Endpoint que processa uma solicitação de treinamento de modelo de machine learning.
+- **[Treina modelo de ML]**: A API faz o download dos dados armazenados no S3 para treinamento do modelo.
+- **[Armazena modelo no S3]**: O processo de treinamento de um modelo de machine learning com os dados baixados. 
+- **[Confirma treinamento]**: O modelo treinado é armazenado no S3 para uso posterior. 
+- **[FastAPI /ml-models/predict]**: Endpoint que processa uma solicitação de previsão.
+- **[Baixa modelo do S3]**: A API faz o download do modelo treinado do S3 para gerar previsões.   
+- **[Gera previsões]**: O processo de geração de previsões com base no modelo baixado.    
 
 ### 2.  - **Diagramas de sequência**:
 
@@ -309,9 +371,10 @@ sequenceDiagram
     API-->>User: Retorna previsões ao usuário
 ```
 
-- **Client**: O usuário interage com a API.
-- **FastAPI**: A aplicação principal que processa as requisições.
-- **AuthDB**: Banco de dados usado para autenticação de usuários.
-- **Processamento**: Funções de processamento de dados (como filtros e agregações).
-- **S3**: Armazena os dados e os modelos.
-- **MLModel**: Modelos de machine learning gerados pelo sistema.
+- **[Usuário]**: Representa o cliente ou usuário interagindo com a API.
+- **[API FastAPI]**:A aplicação principal que gerencia as requisições e interações com os serviços.
+- **[Banco de Dados (Auth)]**: O banco de dados usado para armazenar e verificar as credenciais de autenticação.
+- **[Data Lake (AWS S3)]**: O repositório de armazenamento usado como Data Lake para manter dados brutos e processados
+- **[Web Scraper]**: O componente que faz web scraping para coletar dados de fontes externas.
+- **[Envia dados para S3]**: Os dados coletados pelo scraper são enviados e armazenados no AWS S3 (Data Lake).
+- **[Machine Learning Model]**: O modelo de machine learning que é treinado e utilizado para gerar previsões.
