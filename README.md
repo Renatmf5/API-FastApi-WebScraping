@@ -241,7 +241,7 @@ Você pode acessar a documentação interativa da API no formato Swagger ou ReDo
 ```mermaid
 graph TD;
     A[Usuário] -->|POST /usuarios/login| B[FastAPI /login Endpoint]
-    B --> C[Verifica credenciais no Banco de Dados (Auth)]
+    B --> C[Verifica credenciais no Banco de Dados Auth]
     C -->|Credenciais válidas| D[Gera Token JWT]
     C -->|Credenciais inválidas| F[Retorna 401 Unauthorized]
     D --> E[Retorna 200 OK com Token JWT]
