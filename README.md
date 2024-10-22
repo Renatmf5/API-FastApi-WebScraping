@@ -246,4 +246,38 @@ graph TD;
     F --> G[Train Model]
     G --> H[Armazena o modelo no S3]
     H --> I[Retorna resposta ao usuário]
+
+- **A**: Usuário autenticado faz a requisição à API.
+- **B**: FastAPI processa a requisição e aciona a função de scraper ou upload para o S3.
+- **C**: O scraper coleta os dados de fontes externas.
+- **D**: Os dados são salvos no S3.
+- **E**: Dados são processados (filtrados, transformados).
+- **F**: Dados processados são novamente salvos no S3.
+- **G**: Modelo de Machine Learning é treinado.
+- **H**: Modelo treinado é salvo no S3.
+- **I**: A resposta é retornada ao usuário.
+```
+
+### 2. **Diagrama de Arquitetura da Aplicação**
+
+Aqui, um diagrama de como sua aplicação FastAPI interage com os serviços da AWS (como S3 e EC2) e o banco de dados:
+
+```markdown
+```mermaid
+graph LR;
+    Client[Usuário] -->|HTTP Request| FastAPI
+    FastAPI -->|Autenticação JWT| AuthDB[(Banco de Dados)]
+    FastAPI -->|Processamento de Dados| Processamento[Funções de Processamento]
+    Processamento --> S3[(Data Lake - S3)]
+    Processamento -->|Treinamento de Modelo| MLModel[(Modelos de ML)]
+    S3 -->|Consulta| FastAPI
+    MLModel --> FastAPI
+    FastAPI -->|Resposta| Client[Usuário]
+- **Client**: O usuário interage com a API.
+- **FastAPI**: A aplicação principal que processa as requisições.
+- **AuthDB**: Banco de dados usado para autenticação de usuários.
+- **Processamento**: Funções de processamento de dados (como filtros e agregações).
+- **S3**: Armazena os dados e os modelos.
+- **MLModel**: Modelos de machine learning gerados pelo sistema.
+```
 ```
