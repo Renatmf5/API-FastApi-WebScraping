@@ -241,7 +241,7 @@ Você pode acessar a documentação interativa da API no formato Swagger ou ReDo
 ```mermaid
 graph TD;
     A[Usuário] -->|Envia credenciais| B[FastAPI /usuarios/login]
-    B --> C[Verifica no Banco de Dados (Auth)]
+    B --> C[Verifica no Banco de Dados Auth]
     C -->|Credenciais válidas| D[Gera Token JWT]
     D --> E[Retorna Token JWT ao Usuário]
     
@@ -264,7 +264,6 @@ graph TD;
 
 ### **2. Diagrama de Sequência: Autenticação e Autorização**
 
-```markdown
 ```mermaid
 sequenceDiagram
     participant User as Usuário
@@ -283,6 +282,7 @@ sequenceDiagram
     JWT-->>API: Token válido/inválido
     API-->>User: Acesso Concedido/Acesso Negado
 ```
+
 #### **Legenda para o Diagrama de Sequência**:
 
 1. **User [Usuário]**: O cliente envia suas credenciais para login.
