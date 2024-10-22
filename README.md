@@ -281,7 +281,6 @@ graph LR;
 
 - **Diagramas de sequência**:
   
-  ```markdown
   ```mermaid
   sequenceDiagram
       participant User
